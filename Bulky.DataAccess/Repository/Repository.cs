@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Bulky.DataAccess.Data;
 using Bulky.DataAccess.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
-
 namespace Bulky.DataAccess.Repository
 {
     public class Repository <T> : IRepository<T> where T : class
@@ -18,6 +17,7 @@ namespace Bulky.DataAccess.Repository
         {
             _context= context;
             this._DbSet = _context.Set<T>(); // _context.Caegories == _DbSet
+            //_context.Products.Include(u => u.Category);
         }
         public void Add(T entity)
         {
@@ -29,12 +29,26 @@ namespace Bulky.DataAccess.Repository
         {
             IQueryable<T> query = _DbSet;
             query = query.Where(filter);
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var IncludeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(IncludeProp);
+                }
+            }
             return query.FirstOrDefault();
         }
 
         public IEnumerable<T> GetAll(System.Linq.Expressions.Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
         {
             IQueryable<T> query = _DbSet;
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var IncludeProp in includeProperties.Split(new char[] {','},StringSplitOptions.RemoveEmptyEntries))
+                {
+                  query=  query.Include(IncludeProp);
+                }
+            }
             return query.ToList(); ;
         }
 
