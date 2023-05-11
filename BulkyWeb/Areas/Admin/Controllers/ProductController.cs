@@ -180,6 +180,8 @@ namespace BulkyWeb.Areas.Admin.Controllers
             IEnumerable<Product> products = _unitOfWork.Product.GetAll(includeProperties: "Category");
             return Json(new {data = products});
         }
+        [HttpDelete]
+
         public IActionResult delete(int?id)
         {
             if (id == null || id == 0)
